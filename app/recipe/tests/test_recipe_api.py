@@ -19,7 +19,6 @@ from recipe.serializers import (
     RecipeSerializer,
     RecipeDetailSerializer,
 )
-from setuptools._vendor.more_itertools import recipes
 
 RECIPES_URL = reverse('recipe:recipe-list')
 
@@ -45,7 +44,7 @@ def create_user(**params):
     """Create and return a new user."""
     return get_user_model().objects.create_user(**params)
 
-class PublicRecipeApiTests(TestCase):
+class PublicRecipeAPITests(TestCase):
     """Test unauthenticated API requests."""
     def setUp(self):
         self.client = APIClient()
@@ -206,15 +205,16 @@ class PrivateRecipeApiTest(TestCase):
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        recipe = Recipe.objects.filter(user=self.user)
-        self.assertEqual(recipe.count(), 1)
+        recipes = Recipe.objects.filter(user=self.user)
+        self.assertEqual(recipes.count(), 1)
         recipe = recipes[0]
-        self.assertEqual(recipe.tags.count, 2)
+        self.assertEqual(recipe.tags.count(), 2)
         for tag in payload['tags']:
             exists = recipe.tags.filter(
                 name=tag['name'],
                 user=self.user,
             ).exists()
+            self.assertTrue(exists)
 
     def test_create_recipe_with_existing_tags(self):
         """Test creating a recipe with existing tag."""
@@ -227,8 +227,8 @@ class PrivateRecipeApiTest(TestCase):
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        recipe = Recipe.objects.filter(user=self.user)
-        self.assertEqual(recipe.count(), 1)
+        recipes = Recipe.objects.filter(user=self.user)
+        self.assertEqual(recipes.count(), 1)
         recipe = recipes[0]
         self.assertEqual(recipe.tags.count(), 2)
         self.assertIn(tag_indian, recipe.tags.all())
