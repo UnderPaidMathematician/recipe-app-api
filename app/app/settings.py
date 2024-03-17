@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -42,7 +43,6 @@ INSTALLED_APPS = [
     'user',
     'recipe',
 ]
-# Application definition
 
 
 MIDDLEWARE = [
